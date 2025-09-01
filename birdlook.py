@@ -167,7 +167,7 @@ def generate_info(area_codes):
 
         console = Console()
         console.print(table_reg_obs, table_notable_obs)
-    # TODO add to github
+    # TODO multithread
 
 
 def main():
