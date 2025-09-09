@@ -62,8 +62,6 @@ def regions_load(codes_to_counties) -> dict[str,list]: # returns cities to codes
         'Portland' : relevant_arr[10:12]
     }
 
-    print(city_to_counties)
-
     counties_to_cities = {
         'Ottawa' : 'Ottawa',
         'Waterloo' : 'Waterloo',
