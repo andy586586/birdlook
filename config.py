@@ -9,3 +9,8 @@ CITY_TO_COUNTIES = {
 COUNTIES_TO_CITIES = {
      county: city for city, counties in CITY_TO_COUNTIES.items() for county in counties
 }
+
+
+# for printing tables with colours:
+COLS = ['Name', 'Scientific Name', 'Location', 'Number']
+COL_COLORS = ["green", "yellow", "yellow", "cyan"]
