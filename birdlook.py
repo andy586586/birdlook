@@ -8,7 +8,7 @@ from rich.table import Table
 from art import tprint
 import random
 from ascii_birds import birds # own other file with ascii birds
-from config import CITY_TO_COUNTIES, COUNTIES_TO_CITIES, COLS, COL_COLORS
+from config import CITY_TO_COUNTIES, COUNTIES_TO_CITIES, COLS, COL_COLORS, RELEVANT_COUNTIES, HIDDEN_REGION_1, HIDDEN_REGION_2, HIDDEN_REGION_3, HIDDEN_REGION_4, PRESET_CITIES_OPTIONS, END_MENU_OPTIONS
 from functools import lru_cache
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -28,8 +28,7 @@ from ebird.api.requests import (
 load_dotenv()
 API_KEY = os.getenv("EBIRD_API_KEY")
 
-preset_cities_options = ['Ottawa', 'Waterloo', 'New York City', 'San Francisco', 'Portland', 'Exit']
-end_options = ['Other city', 'Exit']
+
 default_menu_style = get_style(
     {
     "checkbox": "#99dd99",            # unchecked color
@@ -59,25 +58,25 @@ def cached_get_regionds(api_key: str, level: str, region_code: str) -> list[str]
 
 
 def regions_load(codes_to_counties) -> dict[str,list]: # returns cities to codes hashmap
-    relevant = {'Ottawa', 'Waterloo', 'Kings', 'Queens', 'New York', 'Bronx', 'Richmond', 'San Francisco', 'San Mateo', 'Marin', 'Multnomah', 'Washington'}
-    cities_to_codes = {city : [] for city in preset_cities_options}
+    
+    cities_to_codes = {city : [] for city in PRESET_CITIES_OPTIONS}
 
     # get list of relevant US counties
-    counties = get_regions(API_KEY, 'subnational2', 'US-OR') + get_regions(API_KEY, 'subnational2', 'US-CA') + get_regions(API_KEY, 'subnational2', 'US-NY')
+    counties = get_regions(API_KEY, 'subnational2', HIDDEN_REGION_1) + get_regions(API_KEY, 'subnational2', HIDDEN_REGION_2) + get_regions(API_KEY, 'subnational2', HIDDEN_REGION_3)
     for county in counties:
         county_name = county['name']
         code = county['code']
         codes_to_counties[code] = county_name
-        if county_name in relevant:
+        if county_name in RELEVANT_COUNTIES:
             belong_city = COUNTIES_TO_CITIES[county_name]
             cities_to_codes[belong_city].append(code)
 
     # get list of subregions in Ontario
-    sub_regions = get_regions(API_KEY, 'subnational2', 'CA-ON')
+    sub_regions = get_regions(API_KEY, 'subnational2', HIDDEN_REGION_4)
     for county in sub_regions:
         county_name = county['name']
         code = county['code']
-        if county_name in relevant:
+        if county_name in RELEVANT_COUNTIES:
             belong_city = COUNTIES_TO_CITIES[county_name]
             cities_to_codes[belong_city].append(code)
 
@@ -171,13 +170,13 @@ def main():
         # main interactive loop for user
         selected_option = inquirer.select(
             message="Please choose your location:",
-            choices=preset_cities_options,
+            choices=PRESET_CITIES_OPTIONS,
             instruction=DEFAULT_MENU_INSTRUCTION,
             pointer=">",
             style=default_menu_style
         ).execute()
 
-        if selected_option not in preset_cities_options or selected_option == 'Exit':
+        if selected_option not in PRESET_CITIES_OPTIONS or selected_option == 'Exit':
             print("Goodbye")
             break
         else:
@@ -186,7 +185,7 @@ def main():
             generate_info(area_codes) # fn to gen bird info
             user_input = inquirer.select(
                 message="Choose another location on exit?",
-                choices=end_options,
+                choices=END_MENU_OPTIONS,
                 instruction=DEFAULT_MENU_INSTRUCTION,
                 pointer=">",
                 style=default_menu_style
