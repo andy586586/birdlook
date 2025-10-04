@@ -25,3 +25,5 @@ HIDDEN_REGION_4 = 'CA-ON'
 
 PRESET_CITIES_OPTIONS = ['Ottawa', 'Waterloo', 'New York City', 'San Francisco', 'Portland', 'Exit']
 END_MENU_OPTIONS = ['Other city', 'Exit']
+
+
